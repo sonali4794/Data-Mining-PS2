@@ -42,9 +42,8 @@ ggplot(plot1, aes(x = hour_of_day, y = avg_boarding, colour = month))+
   labs(
     x = "Time of the day",
     y = "Average boardings",
-    caption = "The plot shows how the number of boraders on an average varies throughout the day for all 7 days of the week. The trends are depicted for 3 months as mentioned."
+    caption = "The plot shows how the number of boraders on an average varies throughout the day for all 7 days of the week. \n The trends are depicted for 3 months as mentioned."
     )
-)
   
 #make the second plot
 ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
@@ -54,6 +53,6 @@ ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
   labs(
     x = "Temperature",
     y = "No of boardings in every 15-min window",
-    caption = "The plot shows no of boardings across temperatures in intervals \n of 15 mins for every hour of the day."
+    caption = "The plot shows no of boardings across temperatures in intervals of 15 mins for every hour of the day."
     )+
   scale_color_discrete(name = "Type of the day")
