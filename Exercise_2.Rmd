@@ -122,7 +122,7 @@ ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
   theme(plot.caption.position = "plot",
         plot.caption = element_text(hjust = 0),
         plot.title.position = "panel",
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.75))
 
 ```
 
@@ -162,10 +162,11 @@ knn_rmse = knn_grid %>%
   as.data.frame()
 
 tab = matrix(c(linear_medium_rmse,linear_rmse,knn_rmse$err), ncol = 1, byrow = TRUE)
-colnames(tab) = c("Model")
+colnames(tab) = c("RMSE")
 rownames(tab) = c("Medium Model","Linear Model","KNN Model")
 knitr::kable(head(tab))
 ```
+Clearly Linear model is doing better than the other two models
 
 Summary of the linear regression model is:
 ```{r}
@@ -193,6 +194,7 @@ barplot(tab$def_prob,
         legend("topright",c("Good","Poor","Terrible"), fill = c("darkblue","red","green"))
 
 ```
+
 Summary of logit regression
 ```{r}
 
@@ -299,7 +301,7 @@ colnames(tab) = "Area under ROC Curves"
 rownames(tab) = c("Baseline 1","Baseline 2", "Best Linear Model", "Stepwise linear Model")
 knitr::kable(head(tab))
 ```
-Baseline 2 (logit) is the best model
+Baseline 2 (logit) is the best model as per AUC values
 
 ROC curve for prediction on validation data across thresholds. 
 ```{r}
@@ -313,6 +315,7 @@ val_model_prob = predict(val_model, hotels_vals, type = 'response')
 val_model_roc = roc(hotels_vals$children ~ val_model_prob, plot = TRUE, print.auc = TRUE)
 
 ```
+
 Table summarizing the expected (predicted whether the booking will be with a child) and actual bookings in validation data using the baseline 2 model. 
 ```{r}
 #prediction
@@ -345,3 +348,5 @@ colnames(df_final) = c("Expected bookings", "Actual bookings")
 kable(df_final)
 
 ```
+
+The model has done pretty well in predicting the classifier children in the validation data. 

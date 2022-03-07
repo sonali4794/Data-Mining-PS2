@@ -10,24 +10,26 @@
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
-<th style="text-align: right;">Model</th>
+<th style="text-align: right;">RMSE</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Medium Model</td>
-<td style="text-align: right;">65766.89</td>
+<td style="text-align: right;">65864.06</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Linear Model</td>
-<td style="text-align: right;">59530.19</td>
+<td style="text-align: right;">59705.98</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">KNN Model</td>
-<td style="text-align: right;">61407.95</td>
+<td style="text-align: right;">61377.73</td>
 </tr>
 </tbody>
 </table>
+
+Clearly Linear model is doing better than the other two models
 
 Summary of the linear regression model is:
 
@@ -38,30 +40,30 @@ Summary of the linear regression model is:
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -226860  -35774   -5577   27838  453834 
+    ## -226987  -36375   -5747   28596  453437 
     ## 
     ## Coefficients:
     ##                        Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)            221000.4     2785.8  79.332  < 2e-16 ***
-    ## lotSize                  5233.1     1557.0   3.361 0.000795 ***
-    ## age                     -1954.4     1790.8  -1.091 0.275274    
-    ## landValue               32287.4     1692.5  19.077  < 2e-16 ***
-    ## livingArea              42010.6     3013.5  13.941  < 2e-16 ***
-    ## bedrooms                -7611.9     2206.6  -3.450 0.000576 ***
-    ## fireplaces                978.8     1735.3   0.564 0.572796    
-    ## bathrooms               15576.4     2344.2   6.645 4.13e-11 ***
-    ## rooms                    6488.2     2368.1   2.740 0.006214 ** 
-    ## heatinghot water/steam  -9219.3     4422.2  -2.085 0.037247 *  
-    ## heatingelectric         -1476.5    13300.8  -0.111 0.911624    
-    ## fuelelectric            -7647.6    13077.8  -0.585 0.558779    
-    ## fueloil                  5062.0     5057.8   1.001 0.317060    
-    ## centralAirNo           -10035.4     3629.3  -2.765 0.005755 ** 
+    ## (Intercept)            221507.6     2780.3  79.670  < 2e-16 ***
+    ## lotSize                  5827.1     1555.4   3.746 0.000186 ***
+    ## age                     -1712.6     1777.1  -0.964 0.335341    
+    ## landValue               32590.9     1680.9  19.389  < 2e-16 ***
+    ## livingArea              42457.4     3006.1  14.124  < 2e-16 ***
+    ## bedrooms                -7656.3     2226.7  -3.438 0.000600 ***
+    ## fireplaces                803.6     1736.0   0.463 0.643485    
+    ## bathrooms               15516.9     2347.9   6.609 5.23e-11 ***
+    ## rooms                    6051.1     2369.6   2.554 0.010753 *  
+    ## heatinghot water/steam  -8826.3     4413.3  -2.000 0.045673 *  
+    ## heatingelectric          3394.0    13324.3   0.255 0.798971    
+    ## fuelelectric           -11240.7    13119.0  -0.857 0.391665    
+    ## fueloil                   565.4     5026.1   0.112 0.910450    
+    ## centralAirNo           -10482.1     3631.0  -2.887 0.003943 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 60230 on 1627 degrees of freedom
-    ## Multiple R-squared:  0.6305, Adjusted R-squared:  0.6276 
-    ## F-statistic: 213.6 on 13 and 1627 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 60400 on 1627 degrees of freedom
+    ## Multiple R-squared:  0.6345, Adjusted R-squared:  0.6315 
+    ## F-statistic: 217.2 on 13 and 1627 DF,  p-value: < 2.2e-16
 
 Linear model that considers all predictors except pctCollege, sewer,
 waterfront, newConstruction. We have used stepwise regression in both
@@ -77,14 +79,15 @@ faith in the model.
 ## Problem 3: Classification and retrospective sampling
 
 ![](Exercise_2_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
 Summary of logit regression
 
     ##         (Intercept)            duration              amount         installment 
-    ##               -0.63                0.03                0.00                0.24 
+    ##               -1.01                0.04                0.00                0.32 
     ##                 age         historypoor     historyterrible          purposeedu 
-    ##               -0.02               -1.45               -2.13                0.78 
+    ##               -0.02               -1.12               -1.86                0.66 
     ## purposegoods/repair       purposenewcar      purposeusedcar       foreigngerman 
-    ##                0.27                0.95               -0.84               -1.24
+    ##               -0.12                0.57               -0.90               -1.34
 
 <table>
 <thead>
@@ -97,18 +100,18 @@ Summary of logit regression
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">actual_no_default</td>
-<td style="text-align: right;">158</td>
-<td style="text-align: right;">22</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">18</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">actual_default</td>
-<td style="text-align: right;">49</td>
-<td style="text-align: right;">21</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">26</td>
 </tr>
 </tbody>
 </table>
 
-Accuracy of the model based on confusion matrix is 71.6
+Accuracy of the model based on confusion matrix is 70.8
 
 As per this model having terrible or poor credit history implies that
 probability of default will reduce when compared to having good credit
@@ -140,30 +143,31 @@ terrible (293) credit history folks.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Baseline 1</td>
-<td style="text-align: right;">0.6757539</td>
+<td style="text-align: right;">0.6846554</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Baseline 2</td>
-<td style="text-align: right;">0.8605945</td>
+<td style="text-align: right;">0.8747346</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Best Linear Model</td>
-<td style="text-align: right;">0.8610736</td>
+<td style="text-align: right;">0.8710116</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Stepwise linear Model</td>
-<td style="text-align: right;">0.8496996</td>
+<td style="text-align: right;">0.8620339</td>
 </tr>
 </tbody>
 </table>
 
-Baseline 2 (logit) is the best model
+Baseline 2 (logit) is the best model as per AUC values
 
 ROC curve for prediction on validation data across thresholds.
-![](Exercise_2_files/figure-markdown_strict/unnamed-chunk-8-1.png) Table
-summarizing the expected (predicted whether the booking will be with a
-child) and actual bookings in validation data using the baseline 2
-model.
+![](Exercise_2_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+
+Table summarizing the expected (predicted whether the booking will be
+with a child) and actual bookings in validation data using the baseline
+2 model.
 
 <table>
 <thead>
@@ -176,108 +180,111 @@ model.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Fold01</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: left;">19</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold02</td>
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">23</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">16</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold03</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">14</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold04</td>
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">23</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">31</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold05</td>
-<td style="text-align: left;">22</td>
+<td style="text-align: left;">20</td>
 <td style="text-align: left;">20</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold06</td>
+<td style="text-align: left;">21</td>
 <td style="text-align: left;">19</td>
-<td style="text-align: left;">17</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold07</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">19</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">24</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold08</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">24</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">18</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold09</td>
 <td style="text-align: left;">21</td>
-<td style="text-align: left;">26</td>
+<td style="text-align: left;">19</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold10</td>
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">19</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">16</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold11</td>
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">27</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold12</td>
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">21</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: left;">19</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold13</td>
+<td style="text-align: left;">17</td>
 <td style="text-align: left;">23</td>
-<td style="text-align: left;">16</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold14</td>
-<td style="text-align: left;">25</td>
-<td style="text-align: left;">29</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: left;">24</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold15</td>
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">15</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold16</td>
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">22</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">23</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold17</td>
 <td style="text-align: left;">23</td>
-<td style="text-align: left;">20</td>
+<td style="text-align: left;">22</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold18</td>
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">22</td>
+<td style="text-align: left;">28</td>
+<td style="text-align: left;">23</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold19</td>
-<td style="text-align: left;">22</td>
-<td style="text-align: left;">22</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">13</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold20</td>
-<td style="text-align: left;">19</td>
-<td style="text-align: left;">19</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">17</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">414</td>
+<td style="text-align: left;">418</td>
 <td style="text-align: left;">402</td>
 </tr>
 </tbody>
 </table>
+
+The model has done pretty well in predicting the classifier children in
+the validation data.
