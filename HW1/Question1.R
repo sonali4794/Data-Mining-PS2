@@ -42,9 +42,18 @@ ggplot(plot1, aes(x = hour_of_day, y = avg_boarding, colour = month))+
   labs(
     x = "Time of the day",
     y = "Average boardings",
-    caption = "The plot shows how the number of boraders on an average varies throughout the day for all 7 days of the week. \n The trends are depicted for 3 months as mentioned."
-    )
-  
+    caption = "Fig 1: The plot shows how the number of boarders on an average varies throughout the day for all 7 days of the week. 
+    The trends are depicted for 3 months as mentioned. Peak borading hour is similar across weekdays and across weekends but the pattern itself is different between weekdays and weekends.
+    As expected, traffic on buses is much lesser on weekends than weekdays, since there are no classes over the weekend. The anomalies can be explained by holidays - 
+    Monday September is labor day and therefore lesser traffic compared to other days and months.
+    Likewise dip in boarders on wed/thurs/fri in november can be attributed to thanksgiving holidays",
+    title = "Average boardings across 7 days of the week for 3 months"
+    ) +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        plot.title.position = "panel",
+        plot.title = element_text(hjust = 0.5))
+
 #make the second plot
 ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
   geom_point()+
@@ -52,7 +61,16 @@ ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
   theme_minimal()+
   labs(
     x = "Temperature",
-    y = "No of boardings in every 15-min window",
-    caption = "The plot shows no of boardings across temperatures in intervals of 15 mins for every hour of the day."
+    y = "No of boardings",
+    caption = "Fig 2: The plot shows no of boardings across temperatures in intervals of 15 mins for every hour of the day.
+    We observe more boarders over the weekdays than weekends as expected (similar to what we found in previous plot). This behaviour spans over all temperatures.
+    During the morning hours of the day boarding is lesser which is again not surprising as most classes and work shifts begin at aroun 9 am.
+    Temperature does not significantly imapct number of boarders. This is to say that if UT students/employees have to commute via bus, there is very little
+    influence of the temperature on that decision. Be it high or low gemperatures the boarders are distributed quite evenly.",
+    title = "Number boarders facted through the hour of the day across varying temperature"
     )+
-  scale_color_discrete(name = "Type of the day")
+  scale_color_discrete(name = "Type of the day")+
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        plot.title.position = "panel",
+        plot.title = element_text(hjust = 0.5))
