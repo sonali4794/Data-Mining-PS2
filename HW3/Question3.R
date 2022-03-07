@@ -34,3 +34,4 @@ conf_matrix = table(y = german_credit_test$Default,
                     yhat = yhat_logit)
 conf_matrix
 acc = (sum(diag(conf_matrix))/sum(conf_matrix))*100
+acc

@@ -1,0 +1,345 @@
+---
+title: "Exercise 2"
+author: "Sonali"
+date: "07/03/2022"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(ggplot2)
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(modelr)
+library(rsample)
+library(mosaic)
+library(caret)
+library(foreach)
+library(parallel)
+library(colorDF)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+library(modelr)
+library(rsample)
+library(mosaic)
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(modelr)
+library(rsample)
+library(mosaic)
+library(here)
+library(foreach)
+library(pROC)
+library(plotROC)
+library(parallel)
+library(leaps)
+library(MASS)
+library(caret)
+library(dplyr)
+library(doParallel)
+library(tibble)
+library(knitr)
+```
+
+## Problem 1: visualization
+First Plot
+```{r}
+#here has been defined to refer the folder Data-Mining-PS2
+capmetro_UT = read.csv(here("HW1/capmetro_UT.csv"))
+
+#Recoding the categorical variable to display in meaningful order
+capmetro_UT = mutate(capmetro_UT,
+                     day_of_week = factor(day_of_week,
+                                          levels=c("Mon", "Tue", "Wed","Thu", "Fri", "Sat", "Sun")),
+                     month = factor(month,
+                                    levels=c("Sep", "Oct","Nov")))
+
+#make the first plot
+#make a table with necessary grouping
+plot1 = capmetro_UT %>%
+  group_by(hour_of_day, day_of_week, month) %>%
+  summarise(avg_boarding = mean(boarding))
+
+#label all facets by full name of the day
+day_name = list(
+  "Mon" = "Monday",
+  "Tue" = "Tuesday",
+  "Wed" = "Wednesday",
+  "Thu" = "Thursday",
+  "Fri" = "Friday",
+  "Sat" = "Saturday",
+  "Sun" = "Sunday"
+)
+name_labeller = function(variable,value){
+  return(day_name[value])
+}
+
+#Plot line graphs faceted by day
+ggplot(plot1, aes(x = hour_of_day, y = avg_boarding, colour = month))+
+  geom_line()+
+  facet_wrap(~day_of_week, labeller = name_labeller)+
+  theme_minimal()+
+  labs(
+    x = "Time of the day",
+    y = "Average boardings",
+    caption = "Fig 1: The plot shows how the number of boarders on an average varies throughout the day for all 7 days of the week. 
+    The trends are depicted for 3 months as mentioned. Peak borading hour is similar across weekdays and across weekends but the pattern itself is different between weekdays and weekends.
+    As expected, traffic on buses is much lesser on weekends than weekdays, since there are no classes over the weekend. The anomalies can be explained by holidays - 
+    Monday September is labor day and therefore lesser traffic compared to other days and months.
+    Likewise dip in boarders on wed/thurs/fri in november can be attributed to thanksgiving holidays",
+    title = "Average boardings across 7 days of the week for 3 months"
+    ) +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        plot.title.position = "panel",
+        plot.title = element_text(hjust = 0.5))
+```
+Second Plot
+```{r}
+
+#make the second plot
+ggplot(capmetro_UT, aes(x = temperature, y = boarding, colour = weekend))+
+  geom_point()+
+  facet_wrap(~hour_of_day)+
+  theme_minimal()+
+  labs(
+    x = "Temperature",
+    y = "No of boardings",
+    caption = "Fig 2: The plot shows no of boardings across temperatures in intervals of 15 mins for every hour of the day.
+    We observe more boarders over the weekdays than weekends as expected (similar to what we found in previous plot). This behaviour spans over all temperatures.
+    During the morning hours of the day boarding is lesser which is again not surprising as most classes and work shifts begin at aroun 9 am.
+    Temperature does not significantly imapct number of boarders. This is to say that if UT students/employees have to commute via bus, there is very little
+    influence of the temperature on that decision. Be it high or low gemperatures the boarders are distributed quite evenly.",
+    title = "Number boarders facted through the hour of the day across varying temperature"
+    )+
+  scale_color_discrete(name = "Type of the day")+
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        plot.title.position = "panel",
+        plot.title = element_text(hjust = 0.5))
+
+```
+
+## Problem 2: Saratoga house prices
+
+```{r}
+data(SaratogaHouses)
+
+#scaling the variables
+SaratogaHouses = SaratogaHouses %>%
+  mutate(across(c(lotSize, age, landValue, livingArea, pctCollege, bedrooms, fireplaces, bathrooms, rooms), scale))
+
+#create folds and run for 3 different models
+k_folds = 20
+SaratogaHouses_folds = crossv_kfold(SaratogaHouses, k = k_folds)
+
+#refers to the medium model done in class
+lm_medium = map(SaratogaHouses_folds$train, ~ lm(price ~ . - pctCollege - sewer - waterfront - landValue - newConstruction, data=., use.all=FALSE))
+r_medium = map2_dbl(lm_medium, SaratogaHouses_folds$test, modelr::rmse)
+linear_medium_rmse = mean(r_medium)
+
+#best linear model
+lm1 = map(SaratogaHouses_folds$train, ~ lm(price ~ . - pctCollege - sewer - waterfront - newConstruction, data=., use.all=FALSE))
+r1 = map2_dbl(lm1, SaratogaHouses_folds$test, modelr::rmse)
+linear_rmse = mean(r1)
+
+#best KNN model
+k_grid = seq(1,100, by=2)
+knn_grid = foreach(k= k_grid, .combine = 'rbind') %do% {
+  models = map(SaratogaHouses_folds$train, ~knnreg(price ~ . - pctCollege - sewer - waterfront - newConstruction, k = k, data= ., use.all= FALSE))
+  errs = map2_dbl(models, SaratogaHouses_folds$test, modelr::rmse)
+  c(k = k, err = mean(errs), std_err = sd(errs)/sqrt(k_folds))
+} %>% as.data.frame
+
+knn_rmse = knn_grid %>%
+  filter(err==min(knn_grid$err)) %>%
+  as.data.frame()
+
+tab = matrix(c(linear_medium_rmse,linear_rmse,knn_rmse$err), ncol = 1, byrow = TRUE)
+colnames(tab) = c("Model")
+rownames(tab) = c("Medium Model","Linear Model","KNN Model")
+knitr::kable(head(tab))
+```
+
+Summary of the linear regression model is:
+```{r}
+
+summary(lm1$`1`)
+```
+
+Linear model that considers all predictors except pctCollege, sewer, waterfront, newConstruction. We have used stepwise regression in both the direction to determine the appropriate set of variables to be included. Performance of linear and KNN model is very close however, we go ahead with the linear model. In the regression, fireplaces, age, heatingelectric, fuelelectric and fueloil have become insignificant. Lotsize, landvalue, livingarea, bedrooms and bathrooms turn out to be highly significant in deterring the price. Overall, the model has a decent value of R-squared of 62%. P-value is also quite low giving us faith in the model.  
+
+## Problem 3: Classification and retrospective sampling
+
+```{r}
+german_credit = read.csv(here("HW3/german_credit.csv"))
+
+tab = german_credit %>%
+  group_by(history) %>%
+  summarise(def_prob = sum(Default)/n()) %>%
+  as.data.frame()
+
+barplot(tab$def_prob, 
+        main = "Probability of loan defaulting",
+        xlab = "Type of credit",
+        ylim = c(0,1),
+        col = c("darkblue","red","green"), beside=TRUE)
+        legend("topright",c("Good","Poor","Terrible"), fill = c("darkblue","red","green"))
+
+german_credit_data = initial_split(german_credit, prob=0.8)
+german_credit_train = training(german_credit_data)
+german_credit_test = testing(german_credit_data)
+        
+logit_loan = glm(Default ~ duration + amount + installment + age + history + purpose + foreign, data = german_credit_train, family = 'binomial')
+coef(logit_loan)%>% round(2)
+
+phat_logit = predict(logit_loan, german_credit_test, type = 'response')
+yhat_logit = ifelse(phat_logit>0.5,1,0)
+conf_matrix = table(y = german_credit_test$Default,
+                    yhat = yhat_logit)
+rownames(conf_matrix) = c("actual_no_default","actual_default")
+colnames(conf_matrix) = c("predicted_no_default","predicted_default")
+kable(conf_matrix)
+acc = (sum(diag(conf_matrix))/sum(conf_matrix))*100
+```
+
+Accuracy of the model based on confusion matrix is `r acc`
+
+As per this model having terrible or poor credit history implies that probability of default will reduce when compared to having good credit history which is not what we see in real world. The model predicts that poor history multiplies the odds of defaulting on loans by 0.27 and terrible credit history changes the odds by a factor of 0.13. However, this is when compared to the odds of defaulting for someone with good credit history. One would expect terrible credit history is have worse impact than poor credit history however the model suggests otherwise. Although model has 70.4% of accuracy this is undesirable behavior. Therefore, we will need to make changes to the model. There is a risk of wrongly classifying some poor creditors as terrible and vice versa. This is perhaps due to sampling error induced while case controlling. Since the dataset is biased towards having more defaulted loans which in real world is rare. The dataset is heavily skewed towards poor (618) and terrible (293) credit history folks. 
+
+## Problem 4: Children and hotel reservations
+
+```{r}
+hotels_dev = read.csv(here("HW4/hotels_dev.csv"))
+
+
+#prepare a train/test split
+hotels_dev_split = initial_split(hotels_dev, prop = 0.8)
+hotels_dev_train = training(hotels_dev_split)
+hotels_dev_test = testing(hotels_dev_split)
+
+#baseline 1 model
+baseline1 = glm(children ~ market_segment + adults + customer_type + is_repeated_guest, data = hotels_dev_train, family = 'binomial')
+
+phat_baseline1 = predict(baseline1, hotels_dev_test, type = 'response')
+yhat_baseline1 = ifelse(phat_baseline1 > 0.1, 1, 0)
+conf_baseline1 = table(y = hotels_dev_test$children,
+                    yhat = yhat_baseline1)
+conf_baseline1
+
+err_baseline1 = (sum(diag(conf_baseline1))/sum(conf_baseline1))*100
+err_baseline1
+
+#baseline 2 model
+baseline2 = glm(children ~ . -arrival_date, data = hotels_dev_train, family = 'binomial')
+
+phat_baseline2 = predict(baseline2, hotels_dev_test, type = 'response')
+yhat_baseline2 = ifelse(phat_baseline2 > 0.5, 1, 0)
+conf_baseline2 = table(y = hotels_dev_test$children,
+                       yhat = yhat_baseline2)
+conf_baseline2
+
+err_baseline2 = (sum(diag(conf_baseline2))/sum(conf_baseline2))*100
+err_baseline2
+
+#best linear model
+lm1 = lm(children ~ . , data = hotels_dev_train)
+
+phat_lm1 = predict(lm1, hotels_dev_test, type = 'response')
+yhat_lm1 = ifelse(phat_lm1 > 0.5, 1, 0)
+conf_lm1 = table(y = hotels_dev_test$children,
+                       yhat = yhat_lm1)
+conf_lm1
+
+err_lm1 = (sum(diag(conf_lm1))/sum(conf_lm1))*100
+err_lm1
+
+#step
+train_control = trainControl(method = "cv", number = 20)
+step_model = train(children ~ ., data = hotels_dev_train,
+                   method = "leapSeq",
+                   tuneGrid = data.frame(nvmax = 1:21),
+                   trControl = train_control)
+step_model$results
+step_model$bestTune
+summary(step_model$finalModel)
+coef(step_model$finalModel, 17)
+
+lm2 = lm(children ~ hotel + adults + meal + is_repeated_guest + reserved_room_type + booking_changes + customer_type + average_daily_rate + total_of_special_requests, data = hotels_dev_train)
+
+phat_lm2 = predict(lm2, hotels_dev_test, type = 'response')
+yhat_lm2 = ifelse(phat_lm2 > 0.5, 1, 0)
+conf_lm2 = table(y = hotels_dev_test$children,
+                 yhat = yhat_lm2)
+conf_lm2
+
+err_lm2 = (sum(diag(conf_lm2))/sum(conf_lm2))*100
+err_lm2
+
+#compare models
+#plot ROC curves for all 4 models and pick the one with max area or auc value
+baseline1_predict = predict(baseline1, hotels_dev_test, type = 'response')
+baseline1_roc = roc(hotels_dev_test$children ~ baseline1_predict, plot=TRUE, print.auc=TRUE)
+baseline2_predict = predict(baseline2, hotels_dev_test, type = 'response')
+baseline2_roc = roc(hotels_dev_test$children ~ baseline2_predict, plot=TRUE, print.auc=TRUE)
+lm1_predict = predict(lm1, hotels_dev_test, type = 'response')
+lm1_roc = roc(hotels_dev_test$children ~ lm1_predict, plot=TRUE, print.auc=TRUE)
+lm2_predict = predict(lm2, hotels_dev_test, type = 'response')
+lm2_roc = roc(hotels_dev_test$children ~ lm2_predict, plot=TRUE, print.auc=TRUE)
+plot(baseline1_roc, col = 'green')
+plot(baseline2_roc, add=TRUE, col = 'red')
+plot(lm1_roc, add=TRUE, col ='blue')
+plot(lm2_roc, add=TRUE, col ='orange')
+baseline1_auc = auc(hotels_dev_test$children, baseline1_predict)
+baseline2_auc = auc(hotels_dev_test$children, baseline2_predict)
+lm1_auc = auc(hotels_dev_test$children, lm1_predict)
+lm2_auc = auc(hotels_dev_test$children, lm2_predict)
+tab = matrix(c(baseline1_auc, baseline2_auc, lm1_auc, lm2_auc), ncol = 1, byrow = TRUE)
+colnames(tab) = "Area under ROC Curves"
+rownames(tab) = c("Baseline 1","Baseline 2", "Best Linear Model", "Stepwise linear Model")
+knitr::kable(head(tab))
+
+#validation
+hotels_vals = read.csv(here("HW4/hotels_val.csv"))
+
+val_model = glm(children ~ . -arrival_date, data = hotels_vals, family = 'binomial')
+
+val_model_prob = predict(val_model, hotels_vals, type = 'response')
+val_model_roc = roc(hotels_vals$children ~ val_model_prob, plot = TRUE, print.auc = TRUE)
+
+#prediction
+k_folds = 20
+hotels_vals_folds = createFolds(hotels_vals$children, k=k_folds)
+
+expected = lapply(hotels_vals_folds, function(x){
+  hotels_vals_test = hotels_vals[x,]
+  phat = predict(baseline2, hotels_vals_test, type = 'response')
+  return(phat)
+})
+
+actual = lapply(hotels_vals_folds, function(x){
+  hotels_vals_test = hotels_vals[x,]
+  return(sum(hotels_vals_test$children))
+})
+
+expected_bookings = c()
+abs_error = c()
+for (i in seq(1,20)) {
+  expected_bookings = append(expected_bookings, as.integer(sum(unlist(expected[i]))))
+  abs_error = append(abs_error, as.integer(sum(unlink(actual[i])) - as.integer(expected_bookings[i])))
+}
+
+df_final = cbind(expected_bookings, actual)
+df_final = rbind(df_final, df_final %>% apply(2, unlist) %>% apply(2, abs) %>% apply(2, sum)) %>% as.data.frame()
+
+
+colnames(df_final) = c("Expected bookings", "Actual bookings")
+kable(df_final)
+
+```
